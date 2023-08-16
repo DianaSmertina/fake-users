@@ -1,4 +1,4 @@
-import { faker } from "@faker-js/faker";
+import { fakerEN_US, fakerDE, fakerRU } from "@faker-js/faker";
 
 export interface IUser {
     userId: string;
@@ -7,14 +7,19 @@ export interface IUser {
     phone: string;
 }
 
-export function getUsers(amount: number) {
+export function getUsers(amount: number, region: string) {
+    const faker = {
+        "en_US": fakerEN_US,
+        "de": fakerDE,
+        "ru": fakerRU,
+    }
     // faker.seed(123);
     const users: Array<IUser> = new Array(amount).fill(1).map(() => {
         const user = {
-            userId: faker.string.uuid(),
-            name: faker.person.fullName(),
-            address: faker.location.streetAddress(true),
-            phone: faker.phone.number("+# ### ### ## ##"),
+            userId: faker[region as keyof typeof faker].string.uuid(),
+            name: faker[region as keyof typeof faker].person.fullName(),
+            address: faker[region as keyof typeof faker].location.streetAddress(true),
+            phone: faker[region as keyof typeof faker].phone.number("+# ### ### ## ##"),
         };
         return user;
     });

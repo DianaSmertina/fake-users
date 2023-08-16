@@ -1,12 +1,14 @@
-import { faker } from "@faker-js/faker";
+import { useState } from "react";
+import ToolBar from "./components/toolBar/ToolBar";
 import UsersTable from "./components/usersTable/UsersTable";
 
 function App() {
-    const randomName = faker.person.fullName();
+    const [region, setRegion] = useState('en_US');
+
     return (
         <>
-            {`Hi, ${randomName}!`}
-            <UsersTable />
+            <ToolBar setRegion={setRegion} />
+            <UsersTable region={region}/>
         </>
     );
 }

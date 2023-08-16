@@ -1,19 +1,27 @@
 import { Table } from "react-bootstrap";
-import InfiniteTable from "./InfiniteRows";
-import { useMemo, useState } from "react";
+import InfiniteRows from "./InfiniteRows";
+import { useEffect, useMemo, useState } from "react";
 import { getUsers } from "../../helpers/helpers";
 
-function UsersTable() {
-    const [users, setUsers] = useState(getUsers(20));
+interface IUsersTableProps {
+    region: string;
+}
+
+function UsersTable({region}: IUsersTableProps) {
+    const [users, setUsers] = useState(getUsers(20, region));
 
     const getMoreUsers = () => {
-        setUsers((prev) => prev.concat(getUsers(10)));
+        setUsers((prev) => prev.concat(getUsers(10, region)));
     };
+
+    useEffect(() => {
+        setUsers(getUsers(20, region));
+    }, [region]);
 
     const data = useMemo(() => users, [users]);
 
     return (
-        <InfiniteTable getMoreUsers={getMoreUsers} users={data}>
+        <InfiniteRows getMoreUsers={getMoreUsers} users={data}>
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -36,7 +44,7 @@ function UsersTable() {
                     ))}
                 </tbody>
             </Table>
-        </InfiniteTable>
+        </InfiniteRows>
     );
 }
 
