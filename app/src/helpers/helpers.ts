@@ -20,7 +20,7 @@ export function getUsers(amount: number, region: string) {
             name: faker[region as keyof typeof faker].person.fullName(),
             address: faker[region as keyof typeof faker].location.streetAddress(true),
             phone: faker[region as keyof typeof faker].phone.number("+# ### ### ## ##"),
-        };
+        }; //refactor
         return user;
     });
 

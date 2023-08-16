@@ -4,10 +4,11 @@ import UsersTable from "./components/usersTable/UsersTable";
 
 function App() {
     const [region, setRegion] = useState('en_US');
+    const [mistakes, setMistakes] = useState(0);
 
     return (
         <>
-            <ToolBar setRegion={setRegion} />
+            <ToolBar setRegion={setRegion} mistakes={mistakes} setMistakes={setMistakes} />
             <UsersTable region={region}/>
         </>
     );
