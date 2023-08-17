@@ -1,7 +1,7 @@
 import { Table } from "react-bootstrap";
 import InfiniteRows from "./InfiniteRows";
 import { useEffect, useMemo, useState } from "react";
-import { getUsers } from "../../helpers/helpers";
+import { RandomUsers } from "../../helpers/helpers";
 
 interface IUsersTableProps {
     region: string;
@@ -10,16 +10,16 @@ interface IUsersTableProps {
 }
 
 function UsersTable({ region, mistakes, seed }: IUsersTableProps) {
-    const [users, setUsers] = useState(getUsers(20, region, seed));
+    const [users, setUsers] = useState(new RandomUsers().updateUsers(20, region, seed));
 
     const getMoreUsers = () => {
         setUsers((prev) =>
-            prev.concat(getUsers(10, region, seed + prev.length))
+            prev.concat(new RandomUsers().updateUsers(10, region, seed + prev.length))
         );
     };
 
     useEffect(() => {
-        setUsers(getUsers(20, region, seed));
+        setUsers(new RandomUsers().updateUsers(20, region, seed));
     }, [region, mistakes, seed]);
 
     const data = useMemo(() => users, [users]);

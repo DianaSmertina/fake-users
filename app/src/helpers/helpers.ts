@@ -1,4 +1,4 @@
-import { fakerEN_US, fakerDE, fakerRU } from "@faker-js/faker";
+import { fakerEN_US, fakerDE, fakerRU, Faker } from "@faker-js/faker";
 
 export interface IUser {
     userId: string;
@@ -7,31 +7,88 @@ export interface IUser {
     phone: string;
 }
 
-export function getUsers(amount: number, region: string, currentSeed: number) {
-    const faker = {
+export class RandomUsers {
+    static currentFaker: Faker;
+    static currentPhoneFormat: { 1: string; 2: string };
+
+    static fakers = {
         en_US: fakerEN_US,
         de: fakerDE,
         ru: fakerRU,
     };
 
-    Object.values(faker).forEach((localeFaker) => {
-        localeFaker.seed(currentSeed);
-    });
+    static phoneFormat = {
+        en_US: {
+            1: "+1 ### ### ####",
+            2: "1 ### ### ####",
+        },
+        de: {
+            1: "+49 ### ### ####",
+            2: "00 ### ### ####",
+        },
+        ru: {
+            1: "+7 9## ### ####",
+            2: "8 9## ### ####",
+        },
+    };
 
-    const users: Array<IUser> = new Array(amount).fill("").map(() => {
-        const user = {
-            userId: faker[region as keyof typeof faker].string.uuid(),
-            name: faker[region as keyof typeof faker].person.fullName(),
-            address:
-                faker[region as keyof typeof faker].location.streetAddress(
-                    true
-                ),
-            phone: faker[region as keyof typeof faker].phone.number(
-                "+# ### ### ## ##"
-            ),
-        }; //refactor
-        return user;
-    });
+    private setRegionSettings(region: string) {
+        RandomUsers.currentFaker =
+            RandomUsers.fakers[region as keyof typeof RandomUsers.fakers];
+        RandomUsers.currentPhoneFormat =
+            RandomUsers.phoneFormat[
+                region as keyof typeof RandomUsers.phoneFormat
+            ];
+    }
 
-    return users;
+    private setSeed(currentSeed: number) {
+        RandomUsers.currentFaker.seed(currentSeed);
+    }
+
+    private getAddress() {
+        const addresses = {
+            1: `${RandomUsers.currentFaker.location.city()}, 
+                ${RandomUsers.currentFaker.location.streetAddress(true)}`,
+            2: `${RandomUsers.currentFaker.location.state()}, 
+                ${RandomUsers.currentFaker.location.city()},
+                ${RandomUsers.currentFaker.location.street()},
+                ${RandomUsers.currentFaker.number.int({ min: 1, max: 200 })}`,
+        };
+        const randomIndex = RandomUsers.currentFaker.number.int({
+            min: 1,
+            max: 2,
+        });
+        return addresses[randomIndex as keyof typeof addresses];
+    }
+
+    private getPhoneNumber() {
+        const randomIndex = RandomUsers.currentFaker.number.int({
+            min: 1,
+            max: 2,
+        });
+        const format =
+            RandomUsers.currentPhoneFormat[
+                randomIndex as keyof typeof RandomUsers.currentPhoneFormat
+            ];
+        return RandomUsers.currentFaker.phone.number(format);
+    }
+
+    private getUsers(amount: number) {
+        const users: Array<IUser> = new Array(amount).fill("").map(() => {
+            const user = {
+                userId: RandomUsers.currentFaker.string.uuid(),
+                name: RandomUsers.currentFaker.person.fullName(),
+                address: this.getAddress(),
+                phone: this.getPhoneNumber(),
+            };
+            return user;
+        });
+        return users;
+    }
+
+    public updateUsers(amount: number, region: string, currentSeed: number) {
+        this.setRegionSettings(region);
+        this.setSeed(currentSeed);
+        return this.getUsers(amount);
+    }
 }
