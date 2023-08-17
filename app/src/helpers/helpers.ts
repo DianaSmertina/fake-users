@@ -7,19 +7,28 @@ export interface IUser {
     phone: string;
 }
 
-export function getUsers(amount: number, region: string) {
+export function getUsers(amount: number, region: string, currentSeed: number) {
     const faker = {
-        "en_US": fakerEN_US,
-        "de": fakerDE,
-        "ru": fakerRU,
-    }
-    // faker.seed(123);
-    const users: Array<IUser> = new Array(amount).fill(1).map(() => {
+        en_US: fakerEN_US,
+        de: fakerDE,
+        ru: fakerRU,
+    };
+
+    Object.values(faker).forEach((localeFaker) => {
+        localeFaker.seed(currentSeed);
+    });
+
+    const users: Array<IUser> = new Array(amount).fill("").map(() => {
         const user = {
             userId: faker[region as keyof typeof faker].string.uuid(),
             name: faker[region as keyof typeof faker].person.fullName(),
-            address: faker[region as keyof typeof faker].location.streetAddress(true),
-            phone: faker[region as keyof typeof faker].phone.number("+# ### ### ## ##"),
+            address:
+                faker[region as keyof typeof faker].location.streetAddress(
+                    true
+                ),
+            phone: faker[region as keyof typeof faker].phone.number(
+                "+# ### ### ## ##"
+            ),
         }; //refactor
         return user;
     });

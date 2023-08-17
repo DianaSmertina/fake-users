@@ -9,16 +9,18 @@ interface IUsersTableProps {
     seed: number;
 }
 
-function UsersTable({region}: IUsersTableProps) {
-    const [users, setUsers] = useState(getUsers(20, region));
+function UsersTable({ region, mistakes, seed }: IUsersTableProps) {
+    const [users, setUsers] = useState(getUsers(20, region, seed));
 
     const getMoreUsers = () => {
-        setUsers((prev) => prev.concat(getUsers(10, region)));
+        setUsers((prev) =>
+            prev.concat(getUsers(10, region, seed + prev.length))
+        );
     };
 
     useEffect(() => {
-        setUsers(getUsers(20, region));
-    }, [region]);
+        setUsers(getUsers(20, region, seed));
+    }, [region, mistakes, seed]);
 
     const data = useMemo(() => users, [users]);
 
@@ -37,7 +39,7 @@ function UsersTable({region}: IUsersTableProps) {
                 <tbody>
                     {users.map((user, i) => (
                         <tr key={user.userId}>
-                            <td>{i}</td>
+                            <td>{i + 1}</td>
                             <td>{user.userId}</td>
                             <td>{user.name}</td>
                             <td>{user.address}</td>

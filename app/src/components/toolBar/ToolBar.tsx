@@ -1,4 +1,5 @@
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
+import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 
 interface IToolBarProps {
@@ -9,10 +10,20 @@ interface IToolBarProps {
     setSeed: Dispatch<SetStateAction<number>>;
 }
 
-function ToolBar({ setRegion, mistakes, setMistakes, seed, setSeed }: IToolBarProps) {
+function ToolBar({
+    setRegion,
+    mistakes,
+    setMistakes,
+    seed,
+    setSeed,
+}: IToolBarProps) {
     const onMistakeChange = (e: ChangeEvent<HTMLInputElement>) => {
         setMistakes(Number(e.currentTarget.value));
     };
+
+    const randomBtnHandler = () => {
+        setSeed(Math.ceil(Math.random() * 100000));
+    }
 
     return (
         <>
@@ -44,12 +55,15 @@ function ToolBar({ setRegion, mistakes, setMistakes, seed, setSeed }: IToolBarPr
                     }}
                 />
             </Form.Group>
-            <Form.Control
-                placeholder="Seed"
-                type="number"
-                value={seed === 0 ? "" : seed}
-                onChange={(e) => setSeed(Number(e.currentTarget.value))}
-            ></Form.Control>
+            <Form.Group>
+                <Form.Control
+                    placeholder="Seed"
+                    type="number"
+                    value={seed === 0 ? "" : seed}
+                    onChange={(e) => setSeed(Number(e.currentTarget.value))}
+                ></Form.Control>
+                <Button variant="primary" onClick={randomBtnHandler}>Random seed</Button>
+            </Form.Group>
         </>
     );
 }
