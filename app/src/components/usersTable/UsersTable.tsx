@@ -5,6 +5,8 @@ import { getUsers } from "../../helpers/helpers";
 
 interface IUsersTableProps {
     region: string;
+    mistakes: number;
+    seed: number;
 }
 
 function UsersTable({region}: IUsersTableProps) {

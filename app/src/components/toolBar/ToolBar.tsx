@@ -1,13 +1,19 @@
-import { Dispatch, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import Form from "react-bootstrap/Form";
 
 interface IToolBarProps {
     setRegion: Dispatch<SetStateAction<string>>;
     mistakes: number;
     setMistakes: Dispatch<SetStateAction<number>>;
+    seed: number;
+    setSeed: Dispatch<SetStateAction<number>>;
 }
 
-function ToolBar({ setRegion, mistakes, setMistakes }: IToolBarProps) {
+function ToolBar({ setRegion, mistakes, setMistakes, seed, setSeed }: IToolBarProps) {
+    const onMistakeChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setMistakes(Number(e.currentTarget.value));
+    };
+
     return (
         <>
             <Form.Select onChange={(e) => setRegion(e.currentTarget.value)}>
@@ -16,19 +22,34 @@ function ToolBar({ setRegion, mistakes, setMistakes }: IToolBarProps) {
                 <option value="de">Germany + German</option>
                 <option value="ru">Russia + Russian</option>
             </Form.Select>
-            <Form.Group>
-                <Form.Label>Number of mistakes</Form.Label>
+            <Form.Label>Number of mistakes</Form.Label>
+            <Form.Group className="d-flex align-items-center justify-content-center">
                 <Form.Range
                     min={0}
                     max={10}
                     step={0.25}
-                    value={mistakes}
+                    value={Math.min(mistakes, 10)}
+                    onChange={(e) => onMistakeChange(e)}
+                />
+                <Form.Control
+                    type="number"
+                    min={0}
+                    max={1000}
+                    step={0.01}
+                    value={mistakes === 0 ? "" : mistakes}
                     onChange={(e) => {
-                        setMistakes(Number(e.currentTarget.value));
+                        if (Number(e.currentTarget.value) <= 1000) {
+                            onMistakeChange(e as ChangeEvent<HTMLInputElement>);
+                        }
                     }}
                 />
-                <Form.Text>{mistakes}</Form.Text>
             </Form.Group>
+            <Form.Control
+                placeholder="Seed"
+                type="number"
+                value={seed === 0 ? "" : seed}
+                onChange={(e) => setSeed(Number(e.currentTarget.value))}
+            ></Form.Control>
         </>
     );
 }
