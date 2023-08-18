@@ -30,15 +30,10 @@ export class RandomUsers {
         ru: "абвгдеёжзийклмнопрстуфхцчшщъыьэюя",
     };
 
-    private setRegionSettings(region: string) {
-        RandomUsers.currentFaker =
-            RandomUsers.fakers[region as keyof typeof RandomUsers.fakers];
-        RandomUsers.currentPhoneFormat =
-            RandomUsers.phoneFormat[
-                region as keyof typeof RandomUsers.phoneFormat
-            ];
-        RandomUsers.currentAlphabets =
-            RandomUsers.alphabets[region as keyof typeof RandomUsers.alphabets];
+    private setRegionSettings(region: keyof typeof RandomUsers.fakers) {
+        RandomUsers.currentFaker = RandomUsers.fakers[region];
+        RandomUsers.currentPhoneFormat = RandomUsers.phoneFormat[region];
+        RandomUsers.currentAlphabets = RandomUsers.alphabets[region];
     }
 
     private setSeed(currentSeed: number) {
@@ -46,13 +41,14 @@ export class RandomUsers {
     }
 
     private getAddress() {
+        const maxHouseNumber = 200;
         const addresses = [
             `${RandomUsers.currentFaker.location.city()}, 
                 ${RandomUsers.currentFaker.location.streetAddress(true)}`,
             `${RandomUsers.currentFaker.location.state()}, 
                 ${RandomUsers.currentFaker.location.city()},
                 ${RandomUsers.currentFaker.location.street()},
-                ${RandomUsers.currentFaker.number.int({ min: 1, max: 200 })}`,
+                ${RandomUsers.currentFaker.number.int({ min: 1, max: maxHouseNumber})}`,
         ];
         return RandomUsers.currentFaker.helpers.arrayElement(addresses);
     }
@@ -111,10 +107,8 @@ export class RandomUsers {
         if (index === 0) {
             return word[1] + word[0] + word.slice(2);
         }
-
         const letter = word[index];
         const letterToLeft = word[index - 1];
-
         return (
             word.slice(0, index - 1) +
             letter +
@@ -151,7 +145,7 @@ export class RandomUsers {
         mistakes: number,
         page: number
     ) {
-        this.setRegionSettings(region);
+        this.setRegionSettings(region as keyof typeof RandomUsers.fakers);
         this.setSeed(currentSeed);
         return this.getUsers(amount, mistakes, page);
     }
