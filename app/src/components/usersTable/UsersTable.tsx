@@ -1,16 +1,21 @@
-import { Table } from "react-bootstrap";
+import { Container, Table } from "react-bootstrap";
 import InfiniteRows from "./InfiniteRows";
-import { useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { IUser, RandomUsers } from "../../RandomUsers/RandomUsers";
-import { CSVLink } from "react-csv";
 
 interface IUsersTableProps {
     region: string;
     mistakes: number;
     seed: number;
+    setCsvData: Dispatch<SetStateAction<Array<Array<string>> | []>>;
 }
 
-function UsersTable({ region, mistakes, seed }: IUsersTableProps) {
+function UsersTable({
+    region,
+    mistakes,
+    seed,
+    setCsvData,
+}: IUsersTableProps) {
     const [users, setUsers] = useState<Array<IUser>>();
 
     const getMoreUsers = () => {
@@ -34,15 +39,17 @@ function UsersTable({ region, mistakes, seed }: IUsersTableProps) {
     }, [region, mistakes, seed]);
 
     const data = useMemo(() => users, [users]);
-    const tableData = data?.map((user, i) => [i + 1, ...Object.values(user)]) || [];
-    const csvData = [
-        ["№", "ID", "Full name", "Address", "Phone number"],
-        ...tableData
-    ];
+
+    useEffect(() => {
+        const tableData = data?.map((user, i) => [i + 1, ...Object.values(user)]) || [];
+        setCsvData([
+            ["№", "ID", "Full name", "Address", "Phone number"],
+            ...tableData,
+        ]);
+    }, [data, setCsvData]);
 
     return (
-        <>
-            <CSVLink data={csvData}>Download CSV</CSVLink>
+        <Container className="flex align-items-center justify-content-center mt-3">
             <InfiniteRows getMoreUsers={getMoreUsers} users={data}>
                 <Table striped bordered hover>
                     <thead>
@@ -67,7 +74,7 @@ function UsersTable({ region, mistakes, seed }: IUsersTableProps) {
                     </tbody>
                 </Table>
             </InfiniteRows>
-        </>
+        </Container>
     );
 }
 
