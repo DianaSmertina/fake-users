@@ -1,7 +1,7 @@
 import { Table } from "react-bootstrap";
 import InfiniteRows from "./InfiniteRows";
 import { useEffect, useMemo, useState } from "react";
-import { RandomUsers } from "../../helpers/helpers";
+import { IUser, RandomUsers } from "../../RandomUsers/RandomUsers";
 
 interface IUsersTableProps {
     region: string;
@@ -10,16 +10,26 @@ interface IUsersTableProps {
 }
 
 function UsersTable({ region, mistakes, seed }: IUsersTableProps) {
-    const [users, setUsers] = useState(new RandomUsers().updateUsers(20, region, seed));
+    const [users, setUsers] = useState<Array<IUser>>();
 
     const getMoreUsers = () => {
-        setUsers((prev) =>
-            prev.concat(new RandomUsers().updateUsers(10, region, seed + prev.length))
-        );
+        setUsers((prev) => {
+            if (prev) {
+                return prev.concat(
+                    new RandomUsers().updateUsers(
+                        10,
+                        region,
+                        seed + prev.length,
+                        mistakes,
+                        prev.length
+                    )
+                );
+            }
+        });
     };
 
     useEffect(() => {
-        setUsers(new RandomUsers().updateUsers(20, region, seed));
+        setUsers(new RandomUsers().updateUsers(20, region, seed, mistakes, 0));
     }, [region, mistakes, seed]);
 
     const data = useMemo(() => users, [users]);
@@ -37,7 +47,7 @@ function UsersTable({ region, mistakes, seed }: IUsersTableProps) {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, i) => (
+                    {users?.map((user, i) => (
                         <tr key={user.userId}>
                             <td>{i + 1}</td>
                             <td>{user.userId}</td>

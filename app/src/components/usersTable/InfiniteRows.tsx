@@ -1,16 +1,16 @@
 import InfiniteScroll from "react-infinite-scroll-component";
-import { IUser } from "../../helpers/helpers";
+import { IUser } from "../../RandomUsers/RandomUsers";
 
 interface IInfiniteTableProps {
     getMoreUsers: () => void;
-    users: Array<IUser>;
+    users: Array<IUser> | undefined;
     children: React.ReactNode;
 }
 
 function InfiniteTable({ getMoreUsers, users, children }: IInfiniteTableProps) {
     return (
         <InfiniteScroll
-            dataLength={users.length}
+            dataLength={users?.length || 0}
             next={getMoreUsers}
             hasMore={true}
             loader={<h4>Loading...</h4>}
