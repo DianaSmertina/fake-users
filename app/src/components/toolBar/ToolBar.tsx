@@ -1,4 +1,4 @@
-import "./ToolBar.scss";
+import "./ToolBar.css";
 import { ChangeEvent, Dispatch, SetStateAction } from "react";
 import { Button, Container } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
