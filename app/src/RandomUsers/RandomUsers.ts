@@ -75,9 +75,15 @@ export class RandomUsers {
     }
 
     private addMistakes(users: Array<IUser>, mistakes: number, page: number) {
+        const mistakesAmount = Math.floor(mistakes);
+        const lastMistakeChance = mistakes - mistakesAmount;
         const usersWithMistakes = users.map((user, i) => {
             faker.seed(page + i);
             for (let i = 1; i <= mistakes; i++) {
+                this.addMistake(user);
+            }
+            const randomChance = faker.number.float();
+            if (lastMistakeChance && randomChance <= lastMistakeChance) {
                 this.addMistake(user);
             }
             return user;
